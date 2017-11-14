@@ -4,9 +4,6 @@
             [schema.core :as s]
             [zadania.storage :as storage]
             [clojure.data.json :as json]))
-
-
-
 (def st (storage/local-storage))
 
 (storage/add-event st

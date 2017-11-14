@@ -22,8 +22,6 @@
 (s/def ::ev_map (s/keys :req-un [::ev_type ::ev_name ::ev_date ::ev_content]
                         :opt-un []))
 
-
-
 (defn map->path [{:keys [group year month day] :as m}]
   (s/assert ::path-map m)
   [group year month day])
