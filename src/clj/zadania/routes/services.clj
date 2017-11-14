@@ -1,7 +1,8 @@
 (ns zadania.routes.services
   (:require [ring.util.http-response :refer :all]
             [compojure.api.sweet :refer :all]
-            [schema.core :as s]))
+            [schema.core :as s]
+            [zadania.storage :refer [get-all st]]))
 
 (defapi service-routes
   {:swagger {:ui "/swagger-ui"
@@ -14,10 +15,10 @@
     :tags ["thingie"]
     (GET "/" []
          :return {:counter Long
-                  String {String {String {String{:events [{:ev-name String
-                                                           :ev-type String
-                                                           :id Long}]}}}}}
-         (ok (zadania.storage/get-all zadania.storage/st)))
+                  String {String {String {String {:events [{:ev-name String
+                                                            :ev-type String
+                                                            :id Long}]}}}}}
+         (ok (get-all st)))
     (GET "/test" []
          :return {:a String}
          (ok {:a "1"}))

@@ -30,9 +30,9 @@
 
 (def st (local-storage))
 (add-event st
-           {:group "1CB"
+           {:group "1CA"
             :year "2017"
             :month "December"
-            :day "14"}
+            :day "12"}
            {:ev-name "Name"
             :ev-type "Type"})
