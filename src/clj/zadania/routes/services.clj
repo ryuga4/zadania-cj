@@ -9,7 +9,7 @@
 (storage/add-event st
                    {:group "1CA"
                     :year 2017
-                    :month 12
+                    :month 11
                     :day 12}
                    {:ev_name "Name1"
                     :ev_type "homework"
@@ -18,7 +18,7 @@
 (storage/add-event st
                    {:group "1CA"
                     :year 2017
-                    :month 12
+                    :month 11
                     :day 17}
                    {:ev_name "Name2"
                     :ev_type "test"
@@ -27,7 +27,7 @@
 (storage/add-event st
                    {:group "1CA"
                     :year 2017
-                    :month 12
+                    :month 11
                     :day 12}
                    {:ev_name "Name3"
                     :ev_type "other"
