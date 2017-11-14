@@ -1,5 +1,7 @@
 (ns zadania.storage
-  (:require [clojure.spec.alpha :as s]))
+  (:require [clojure.spec.alpha :as s]
+            [monger.core :as mg]
+            [monger.collection :as mc]))
 
 (s/check-asserts true)
 
@@ -44,3 +46,20 @@
                             (update-in path conj ev)))))))
       (get-all [_] @st))))
 
+
+(def uri (or (System/getenv "MONGOHQ_URL") "mongodb://heroku_5nfs6hsl:mdpceu2cdagii9ulrtgvdbcr9d@ds163595.mlab.com:63595/heroku_5nfs6hsl"))
+
+(def connection (atom {}))
+
+(defn start []
+  (let [{:keys [conn db]} (mg/connect-via-uri uri)]
+    (reset! connection {:conn conn
+                        :db db})))
+
+
+
+
+
+(defn stop []
+  (mg/disconnect (:conn @connection))
+  (reset! connection {}))

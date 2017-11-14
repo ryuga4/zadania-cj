@@ -12,8 +12,8 @@
                     :month 12
                     :day 12}
                    {:ev_name "Name1"
-                    :ev_type "Type1"
-                    :ev_date "199806071200"
+                    :ev_type "homework"
+                    :ev_date "201711121200"
                     :ev_content "Content1"})
 (storage/add-event st
                    {:group "1CA"
@@ -21,17 +21,25 @@
                     :month 12
                     :day 17}
                    {:ev_name "Name2"
-                    :ev_type "Type2"
-                    :ev_date "201712122137"
+                    :ev_type "test"
+                    :ev_date "201711172137"
                     :ev_content "Content2"})
-
+(storage/add-event st
+                   {:group "1CA"
+                    :year 2017
+                    :month 12
+                    :day 12}
+                   {:ev_name "Name3"
+                    :ev_type "other"
+                    :ev_date "201711122137"
+                    :ev_content "Content2"})
 
 (defapi service-routes
   {:swagger {:ui "/swagger-ui"
              :spec "/swagger.json"
              :data {:info {:version "1.0.0"
                            :title "Sample API"
-                           :description "Sample Services"}}}}
+                           :description "Sample Service?s"}}}}
 
 
 
