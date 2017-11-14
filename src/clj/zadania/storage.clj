@@ -52,14 +52,16 @@
 (def connection (atom {}))
 
 (defn start []
-  (let [{:keys [conn db]} (mg/connect-via-uri uri)]
+  #_(let [{:keys [conn db]} (mg/connect-via-uri uri)]
     (reset! connection {:conn conn
-                        :db db})))
+                        :db db}))
+  nil)
 
 
 
 
 
 (defn stop []
-  (mg/disconnect (:conn @connection))
-  (reset! connection {}))
+  #_(mg/disconnect (:conn @connection))
+  #_(reset! connection {})
+  nil)
