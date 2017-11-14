@@ -2,7 +2,20 @@
   (:require [ring.util.http-response :refer :all]
             [compojure.api.sweet :refer :all]
             [schema.core :as s]
-            [zadania.storage :refer [get-all st]]))
+            [zadania.storage :as storage]))
+
+
+
+(def st (storage/local-storage))
+
+(storage/add-event st
+           {:group "1CA"
+            :year "2017"
+            :month "December"
+            :day "12"}
+           {:ev-name "Name"
+            :ev-type "Type"})
+
 
 (defapi service-routes
   {:swagger {:ui "/swagger-ui"
@@ -10,7 +23,9 @@
              :data {:info {:version "1.0.0"
                            :title "Sample API"
                            :description "Sample Services"}}}}
-  
+
+
+
   (context "/api" []
     :tags ["thingie"]
     (GET "/" []
@@ -18,7 +33,7 @@
                   String {String {String {String {:events [{:ev-name String
                                                             :ev-type String
                                                             :id Long}]}}}}}
-         (ok (get-all st)))
+         (ok (storage/get-all st)))
     (GET "/test" []
          :return {:a String}
          (ok {:a "1"}))

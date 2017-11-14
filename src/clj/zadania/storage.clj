@@ -1,5 +1,5 @@
 (ns zadania.storage
-  (:require [clojure.spec.alpha :as s]))
+  #_(:require [clojure.spec.alpha :as s]))
 
 
 
@@ -28,11 +28,5 @@
                             (update-in path conj ev)))))))
       (get-all [_] @st))))
 
-(def st (local-storage))
-(add-event st
-           {:group "1CA"
-            :year "2017"
-            :month "December"
-            :day "12"}
-           {:ev-name "Name"
-            :ev-type "Type"})
+
+
