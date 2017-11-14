@@ -55,4 +55,4 @@
          (ok (storage/get-all st)))
     (GET "/chyzy" []
          :return String
-         (ok(json/write-str (get-in (storage/get-all st) ["1CA" 2017 12]))))))
+         (ok(json/write-str (get-in (storage/get-all st) ["1CA" 2017 11]))))))
