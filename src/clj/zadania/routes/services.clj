@@ -19,7 +19,7 @@
                    {:group "1CA"
                     :year 2017
                     :month 12
-                    :day 12}
+                    :day 17}
                    {:ev_name "Name2"
                     :ev_type "Type2"
                     :ev_date "201712122137"
