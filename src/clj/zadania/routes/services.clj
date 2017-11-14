@@ -2,19 +2,31 @@
   (:require [ring.util.http-response :refer :all]
             [compojure.api.sweet :refer :all]
             [schema.core :as s]
-            [zadania.storage :as storage]))
+            [zadania.storage :as storage]
+            [clojure.data.json :as json]))
 
 
 
 (def st (storage/local-storage))
 
 (storage/add-event st
-           {:group "1CA"
-            :year "2017"
-            :month "December"
-            :day "12"}
-           {:ev-name "Name"
-            :ev-type "Type"})
+                   {:group "1CA"
+                    :year 2017
+                    :month 12
+                    :day 12}
+                   {:ev_name "Name1"
+                    :ev_type "Type1"
+                    :ev_date "199806071200"
+                    :ev_content "Content1"})
+(storage/add-event st
+                   {:group "1CA"
+                    :year 2017
+                    :month 12
+                    :day 12}
+                   {:ev_name "Name2"
+                    :ev_type "Type2"
+                    :ev_date "201712122137"
+                    :ev_content "Content2"})
 
 
 (defapi service-routes
@@ -28,41 +40,14 @@
 
   (context "/api" []
     :tags ["thingie"]
-    (GET "/" []
+    (GET "/all" []
          :return {:counter Long
-                  String {String {String {String {:events [{:ev-name String
-                                                            :ev-type String
-                                                            :id Long}]}}}}}
+                  String {Long {Long {Long [{:ev_name String
+                                               :ev_type String
+                                               :ev_content String
+                                               :ev_date String
+                                               :id Long}]}}}}
          (ok (storage/get-all st)))
-    (GET "/test" []
-         :return {:a String}
-         (ok {:a "1"}))
-    (GET "/plus" []
-      :return       Long
-      :query-params [x :- Long, {y :- Long 1}]
-      :summary      "x+y with query-parameters. y defaults to 1."
-      (ok (+ x y)))
-
-    (POST "/minus" []
-      :return      Long
-      :body-params [x :- Long, y :- Long]
-      :summary     "x-y with body-parameters."
-      (ok (- x y)))
-
-    (GET "/times/:x/:y" []
-      :return      Long
-      :path-params [x :- Long, y :- Long]
-      :summary     "x*y with path-parameters"
-      (ok (* x y)))
-
-    (POST "/divide" []
-      :return      Double
-      :form-params [x :- Long, y :- Long]
-      :summary     "x/y with form-parameters"
-      (ok (/ x y)))
-
-    (GET "/power" []
-      :return      Long
-      :header-params [x :- Long, y :- Long]
-      :summary     "x^y with header-parameters"
-      (ok (long (Math/pow x y))))))
+    (GET "/chyzy" []
+         :return String
+         (ok(json/write-str (get-in (storage/get-all st) ["1CA" 2017 12]))))))
