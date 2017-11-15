@@ -15,6 +15,7 @@
                  [metosin/muuntaja "0.3.2"]
                  [metosin/ring-http-response "0.9.0"]
                  [mount "0.1.11"]
+                 [cheshire "5.8.0"]
                  [com.novemberain/monger "3.1.0"]
                  [org.clojure/clojure "1.9.0-RC1"]
                  [org.clojure/tools.cli "0.3.5"]

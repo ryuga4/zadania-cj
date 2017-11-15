@@ -1,6 +1,8 @@
 (ns zadania.storage
   (:require [clojure.spec.alpha :as s]
+            [cheshire.core :refer :all]
             [monger.core :as mg]
+            [clojure.data.json :as json]
             [monger.collection :as mc]))
 
 (s/check-asserts true)
@@ -47,21 +49,70 @@
       (get-all [_] @st))))
 
 
+
+
+
+
+
 (def uri (or (System/getenv "MONGOHQ_URL") "mongodb://heroku_5nfs6hsl:mdpceu2cdagii9ulrtgvdbcr9d@ds163595.mlab.com:63595/heroku_5nfs6hsl"))
 
-(def connection (atom {}))
+(defonce connection (atom {}))
 
 (defn start []
-  #_(let [{:keys [conn db]} (mg/connect-via-uri uri)]
+  (let [{:keys [conn db]} (mg/connect-via-uri uri)]
     (reset! connection {:conn conn
-                        :db db}))
-  nil)
+                        :db db})))
+(defn st-clear []
+  (mc/drop (:db @connection) "col1"))
+
+(defn st-get-all []
+  (mc/find-maps (:db @connection) "col1"))
+
+(defmacro st-find [a]
+  `(mc/find-one-as-map (:db @connection) "col1" ~a))
+
+(defn json-repair [a]
+  (json/read-str (json/write-str a)))
+(defn st-insert [{:keys [group year month day] :as m} event]
+  (s/assert ::path-map m)
+  (let [path (map->path m)
+        f (fn [{:keys [counter] :as m}]
+            (let [ev (assoc event :id counter)]
+              (-> (if (nil? (get-in m path))
+                    (assoc-in m path [])
+                    m)
+                  (update :counter inc)
+                  (update-in path conj ev))))]
+    (if-let [record (st-find {:group group})]
+      (mc/update (:db @connection) "col1" {:group group} (json-repair (f record)))
+      (mc/insert (:db @connection) "col1" (json-repair (f {:counter 0 :group group}))))
+    ))
+
+(defn st-get-month [group year month]
+  (s/assert string? group)
+  (s/assert int? year)
+  (s/assert int? month)
+  (dissoc (if-let [gr (st-find {:group group})]
+           (get-in gr (mapv keyword [group (str year) (str month)]))
+           {:error "no such group"})
+          :_id))
 
 
 
 
+#_(st-insert {:group "1CA"
+            :year 2017
+            :month 11
+            :day 12}
+           {:ev-type "homework"
+            :ev-name "namew"
+            :ev-date "201711121200"
+            :ev-content "content"})
+
+
+#_(st-get-all)
+#_(st-clear)
 
 (defn stop []
-  #_(mg/disconnect (:conn @connection))
-  #_(reset! connection {})
-  nil)
+  (mg/disconnect (:conn @connection))
+  (reset! connection {}))

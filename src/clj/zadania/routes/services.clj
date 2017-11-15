@@ -3,6 +3,7 @@
             [compojure.api.sweet :refer :all]
             [schema.core :as s]
             [zadania.storage :as storage]
+            [cheshire.core :refer :all]
             [clojure.data.json :as json]))
 (def st (storage/local-storage))
 
@@ -33,6 +34,20 @@
                     :ev_type "other"
                     :ev_date "201711122137"
                     :ev_content "Content2"})
+(s/defschema Path
+  {:group s/Str
+   :year s/Int
+   :month s/Int
+   :day s/Int})
+(s/defschema Event
+  {:ev_name s/Str
+   :ev_type s/Str
+   :ev_content s/Str
+   :ev_date s/Str})
+(s/defschema Path-Event
+  {:path Path
+   :event Event})
+
 
 (defapi service-routes
   {:swagger {:ui "/swagger-ui"
@@ -48,11 +63,21 @@
     (GET "/all" []
          :return {:counter Long
                   String {Long {Long {Long [{:ev_name String
-                                               :ev_type String
-                                               :ev_content String
-                                               :ev_date String
-                                               :id Long}]}}}}
+                                             :ev_type String
+                                             :ev_content String
+                                             :ev_date String
+                                             :id Long}]}}}}
          (ok (storage/get-all st)))
     (GET "/chyzy" []
          :return String
-         (ok(json/write-str (get-in (storage/get-all st) ["1CA" 2017 11]))))))
+         (ok(json/write-str (get-in (storage/get-all st) ["1CA" 2017 11]))))
+    (POST "/insert" []
+          :return String
+          :body [pe Path-Event]
+          (do (storage/st-insert (:path pe) (:event pe))
+              (ok "ok")))
+    (GET "/month-str" []
+         :return String
+         :query-params [group :- String, year :- Long, month :- Long]
+         (ok (generate-string (storage/st-get-month group year month))))
+    ))
