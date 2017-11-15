@@ -50,7 +50,7 @@
 
 #_(st-find-group "TEST")
 (defn st-get-month [group year month]
-  (if-let [record (find-group group)]
+  (if-let [record (st-find-group group)]
     (if-let [m (get-in record (mapv keyword [group year month]))]
       m
       {})))
