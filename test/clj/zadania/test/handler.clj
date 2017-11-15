@@ -18,9 +18,9 @@
 (->((app) (-> (request :post "/api/insert" (generate-string
 
                                             {:path {:group "TEST"
-                                                    :year 2017
-                                                    :month 12
-                                                    :day 6}
+                                                    :year "2017"
+                                                    :month "12"
+                                                    :day "6"}
                                              :event {:ev_name "tescik"
                                                      :ev_date "201711121200"
                                                      :ev_type "other"
@@ -30,8 +30,20 @@
               (content-type "application/json")))
    (update :body slurp))
 (storage/st-clear)
-(slurp (:body ((app) (request :get "/api/month-str?group=TEST&year=2017&month=11"))))
+(slurp (:body ((app) (request :get "/api/month?group=TEST&year=2017&month=11"))))
 (slurp (:body ((app) (request :get "/api/all"))))
-(generate-string (storage/st-get-month "TEST3" 2000 1))
+(generate-string (storage/st-get-month "TEST" "2017" "12"))
 (generate-string (dissoc (storage/st-find {:group "TEST3"}) :_id))
 (storage/st-get-all)
+
+
+
+(into {}
+      (map (fn [[k v]] [(name k) v])
+           (storage/st-get-month "TEST" "2017" "11")))
+
+
+
+(into {} (map (fn [[a b]] [a b]) {:a 1 :b 2}))
+
+
