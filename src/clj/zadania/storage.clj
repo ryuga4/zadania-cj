@@ -98,7 +98,6 @@
           )
 
 
-(st-clear)
 
 #_(st-insert {:group "1CA"
             :year 2017
