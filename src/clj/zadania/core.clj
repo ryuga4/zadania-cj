@@ -5,7 +5,8 @@
             [zadania.config :refer [env]]
             [clojure.tools.cli :refer [parse-opts]]
             [clojure.tools.logging :as log]
-            [mount.core :as mount])
+            [mount.core :as mount]
+            [zadania.storage :as storage])
   (:gen-class))
 
 (def cli-options
@@ -33,11 +34,13 @@
 
 
 (defn stop-app []
+  (storage/stop)
   (doseq [component (:stopped (mount/stop))]
     (log/info component "stopped"))
   (shutdown-agents))
 
 (defn start-app [args]
+  (storage/start)
   (doseq [component (-> args
                         (parse-opts cli-options)
                         mount/start-with-args
