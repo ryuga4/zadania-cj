@@ -69,13 +69,13 @@
   (mc/find-maps (:db @connection) "col1"))
 
 (defmacro st-find [a]
-  `(mc/find-one-as-map (:db @connection) "col1" ~a))
+  `(dissoc (mc/find-one-as-map (:db @connection) "col1" ~a) :_id))
 
 (defn json-repair [a]
   (json/read-str (json/write-str a)))
 (defn st-insert [{:keys [group year month day] :as m} event]
   (s/assert ::path-map m)
-  (let [path (map->path m)
+  (let [path (mapv (comp keyword str) (map->path m))
         f (fn [{:keys [counter] :as m}]
             (let [ev (assoc event :id counter)]
               (-> (if (nil? (get-in m path))
@@ -92,13 +92,13 @@
   (s/assert string? group)
   (s/assert int? year)
   (s/assert int? month)
-  (dissoc (if-let [gr (st-find {:group group})]
-           (get-in gr (mapv keyword [group (str year) (str month)]))
-           {:error "no such group"})
-          :_id))
+   (if-let [gr (st-find {:group group})]
+       (get-in gr (mapv keyword [group (str year) (str month)]))
+       {:error "no such group"})
+          )
 
 
-
+(st-clear)
 
 #_(st-insert {:group "1CA"
             :year 2017

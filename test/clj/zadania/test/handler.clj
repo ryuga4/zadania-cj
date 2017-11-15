@@ -15,13 +15,23 @@
     (let [response ((app) (request :get "/invalid"))]
       (is (= 404 (:status response))))))
 
-(->((app) (-> (request :post "/api/insert" (generate-string {:path {:group "TEST"
-                                                                      :year 2000
-                                                                      :month 1
-                                                                      :day 1}
-                                                               :event {:ev_name "test name"
-                                                                       :ev_date "200001011200"
-                                                                       :ev_type "homework"
-                                                                       :ev_content "content test"}}))
+(->((app) (-> (request :post "/api/insert" (generate-string
+
+                                            {:path {:group "TEST"
+                                                    :year 2017
+                                                    :month 12
+                                                    :day 6}
+                                             :event {:ev_name "tescik"
+                                                     :ev_date "201711121200"
+                                                     :ev_type "other"
+                                                     :ev_content "content test"}}
+
+                                            ))
               (content-type "application/json")))
    (update :body slurp))
+(storage/st-clear)
+(slurp (:body ((app) (request :get "/api/month-str?group=TEST&year=2017&month=11"))))
+(slurp (:body ((app) (request :get "/api/all"))))
+(generate-string (storage/st-get-month "TEST3" 2000 1))
+(generate-string (dissoc (storage/st-find {:group "TEST3"}) :_id))
+(storage/st-get-all)
