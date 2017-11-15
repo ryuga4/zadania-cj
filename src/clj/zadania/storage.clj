@@ -53,12 +53,12 @@
 
 
 
-
-(def uri (or (System/getenv "MONGOHQ_URL") "mongodb://heroku_5nfs6hsl:mdpceu2cdagii9ulrtgvdbcr9d@ds163595.mlab.com:63595/heroku_5nfs6hsl"))
+(def uri (or #_(System/getenv "MONGOHQ_URL") "mongodb://heroku_5nfs6hsl:mdpceu2cdagii9ulrtgvdbcr9d@ds163595.mlab.com:63595/heroku_5nfs6hsl"))
 
 (defonce connection (atom {}))
 
 (defn start []
+  (println "\n\n\n --------------- START DATABASE --------------- \n\n\n")
   (let [{:keys [conn db]} (mg/connect-via-uri uri)]
     (reset! connection {:conn conn
                         :db db})))
@@ -114,5 +114,6 @@
 #_(st-clear)
 
 (defn stop []
+  (println "\n\n\n --------------- STOP DATABASE --------------- \n\n\n")
   (mg/disconnect (:conn @connection))
   (reset! connection {}))
