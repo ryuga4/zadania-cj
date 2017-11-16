@@ -54,8 +54,7 @@
          :return {String [{:ev_type String
                            :ev_date String
                            :ev_name String
-                           :ev_content String
-                           :id Long}]}
+                           :ev_content String}]}
          :query-params [group :- String, year :- String, month :- String]
          (ok (into {}
                    (map (fn [[k v]] [(name k) v])
