@@ -45,6 +45,11 @@
           :body [pe Path-Event]
           (do (storage/st-insert (:group pe) (:event pe))
               (ok "ok")))
+    (POST "/delete" []
+          :return String
+          :body [pe Path-Event]
+          (ok (str (storage/st-delete (:group pe) (:event pe)))))
+
     (GET "/month" []
          :return {String [{:ev_type String
                            :ev_date String

@@ -57,19 +57,19 @@
         [group year month day :as path] (mapv keyword [gr
                                                        (s/assert ::year (str y1 y2))
                                                        (s/assert ::month m)
-                                                          (s/assert ::day d)])
+                                                       (s/assert ::day d)])
         {:keys [counter] :as record} (st-find-group group)]
     (if (nil? record)
-      (mc/insert (:db @connection) "col1" (-> {:group group
-                                               :counter 2}
-                                              (assoc-in path [(assoc event :id 1)])))
+      (mc/insert (:db @connection) "col1" (-> {:group group}
+                                              (assoc-in path [event])))
       (mc/update (:db @connection)
                  "col1"
                  {:group group}
-                 (-> (if (get-in record path)
-                      (update-in record path conj (assoc event :id counter))
-                      (assoc-in record path [(assoc event :id counter)]))
-                     (update :counter inc))))))
+                 (if (get-in record path)
+                   (update-in record path (fn [a b]
+                                            (conj (set a) b)) event)
+                     (assoc-in record path [event]))
+                     ))))
 
 (defn st-get-month [group year month]
   (s/assert ::year year)
@@ -78,6 +78,28 @@
     (if-let [m (get-in record (mapv keyword [group year month]))]
       m
       {})))
+
+(disj (set [1 2 3]) 4)
+(conj [1 2])
+
+(disj #{{:a 1}{:a 2}} {:a 2})
+
+(defn st-delete [gr event]
+  (let [[y1 y2 m d time-h time-m] (mapv str/join(take 6(partition 2(str/split (:ev_date event) #""))))
+        _ (do(s/assert ::time-h time-h)
+             (s/assert ::time-m time-m))
+        [group year month day :as path] (mapv keyword [gr
+                                                       (s/assert ::year (str y1 y2))
+                                                       (s/assert ::month m)
+                                                       (s/assert ::day d)])
+        record (st-find-group group)]
+    (if (nil? record)
+      "brak grupy"
+      (if (get-in record path)
+        (mc/update (:db @connection) "col1" {:group gr}
+                   (update-in record path (fn [a b]
+                                            (disj (set a) b)) event))
+        "brak eventów w tym dniu"))))
 
 
 #_(st-insert {:group "TEST"
