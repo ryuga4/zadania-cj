@@ -3,8 +3,8 @@
             [cheshire.core :refer :all]
             [monger.core :as mg]
             [clojure.data.json :as json]
-            [monger.collection :as mc]))
-
+            [monger.collection :as mc]
+            [clojure.string :as str]))
 
 (defn map->path [{:keys [group year month day] :as m}]
   [group year month day])
@@ -14,11 +14,7 @@
 
 (defonce connection (atom {}))
 
-(defn start []
-  (println "\n\n\n --------------- START DATABASE --------------- \n\n\n")
-  (let [{:keys [conn db]} (mg/connect-via-uri uri)]
-    (reset! connection {:conn conn
-                        :db db})))
+
 (defn st-clear []
   (mc/drop (:db @connection) "col1"))
 
@@ -29,8 +25,9 @@
   (dissoc (mc/find-one-as-map (:db @connection) "col1" {:group group})
           :_id))
 
-(defn st-insert [path-map event]
-  (let [[group year month day :as path] (mapv keyword (map->path path-map))
+(defn st-insert [gr event]
+  (let [[y1 y2 m d] (mapv str/join(take 4(partition 2(str/split (:ev_date event) #""))))
+        [group year month day :as path] (mapv keyword [gr (str y1 y2) m d])
         {:keys [counter] :as record} (st-find-group group)]
     (if (nil? record)
       (mc/insert (:db @connection) "col1" (-> {:group group
@@ -44,29 +41,27 @@
                       (assoc-in record path [(assoc event :id counter)]))
                      (update :counter inc))))))
 
-(defn st-fill-month [record group year month]
-  (-> record
-      (assoc-in (mapv keyword [group year month]) {})))
-
-#_(st-find-group "TEST")
 (defn st-get-month [group year month]
   (if-let [record (st-find-group group)]
     (if-let [m (get-in record (mapv keyword [group year month]))]
       m
       {})))
 
-#_(st-get-month "TEST" "2017" "11")
 
 #_(st-insert {:group "TEST"
             :year "2017"
-            :month "11"
-            :day "11"}
+            :month "12"
+            :day "20"}
            {:ev_type "other2"
             :ev_name "jakies gowno"
-            :ev_date "201712101200"
+            :ev_date "201712201200"
             :ev_content "duopa"})
 
-
+(defn start []
+  (println "\n\n\n --------------- START DATABASE --------------- \n\n\n")
+  (let [{:keys [conn db]} (mg/connect-via-uri uri)]
+    (reset! connection {:conn conn
+                        :db db})))
 
 (defn stop []
   (println "\n\n\n --------------- STOP DATABASE --------------- \n\n\n")

@@ -17,8 +17,12 @@
    :ev_content s/Str
    :ev_date s/Str})
 (s/defschema Path-Event
-  {:path Path
+  {:group s/Str
    :event Event})
+
+
+(s/defschema X
+  {:a s/Int})
 
 
 (defapi service-routes
@@ -32,11 +36,14 @@
 
   (context "/api" []
     :tags ["thingie"]
-   
+    (POST "/x" []
+          :return String
+          :body [a {:a Long}]
+          (ok (str a)))
     (POST "/insert" []
           :return String
           :body [pe Path-Event]
-          (do (storage/st-insert (:path pe) (:event pe))
+          (do (storage/st-insert (:group pe) (:event pe))
               (ok "ok")))
     (GET "/month" []
          :return {String [{:ev_type String
