@@ -16,13 +16,9 @@
       (is (= 404 (:status response))))))
 
 (->((app) (-> (request :post "/api/insert" (generate-string
-
-                                            {:path {:group "TEST"
-                                                    :year "2017"
-                                                    :month "12"
-                                                    :day "6"}
+                                            {:group "TEST2"
                                              :event {:ev_name "tescik"
-                                                     :ev_date "201711121200"
+                                                     :ev_date "201711181200"
                                                      :ev_type "other"
                                                      :ev_content "content test"}}
 
@@ -30,6 +26,8 @@
               (content-type "application/json")))
    (update :body slurp))
 (storage/st-clear)
+
+(slurp (:body ((app) (content-type (request :post "/api/x" "{\"a\":10}") "application/json"))))
 (slurp (:body ((app) (request :get "/api/month?group=TEST&year=2017&month=11"))))
 (slurp (:body ((app) (request :get "/api/all"))))
 (generate-string (storage/st-get-month "TEST" "2017" "12"))

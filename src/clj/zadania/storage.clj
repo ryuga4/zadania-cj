@@ -6,6 +6,32 @@
             [monger.collection :as mc]
             [clojure.string :as str]))
 
+(s/check-asserts true)
+
+(s/def ::month (s/and string?
+                      #(= 2 (count %))
+                      #(let [a (read-string %1)]
+                         (and (<= 1 a)
+                              (>= 12 a)))))
+(s/def ::year (s/and string?
+                     #(= 4 (count %))))
+(s/def ::day (s/and string?
+                    #(= 2 (count %))
+                    #(let [a (read-string %1)]
+                       (and (<= 1 a)
+                            (>= 31 a)))))
+(s/def ::time-h (s/and string?
+                       #(= 2 (count %))
+                       #(let [a (read-string %1)]
+                          (and (<= 0 a)
+                               (> 24 a)))))
+(s/def ::time-m (s/and string?
+                       #(= 2 (count %))
+                       #(let [a (read-string %1)]
+                          (and (<= 0 a)
+                               (> 60 a)))))
+
+(map str/join(partition 2 "123123"))
 (defn map->path [{:keys [group year month day] :as m}]
   [group year month day])
 
@@ -24,10 +50,14 @@
 (defn st-find-group [group]
   (dissoc (mc/find-one-as-map (:db @connection) "col1" {:group group})
           :_id))
-
 (defn st-insert [gr event]
-  (let [[y1 y2 m d] (mapv str/join(take 4(partition 2(str/split (:ev_date event) #""))))
-        [group year month day :as path] (mapv keyword [gr (str y1 y2) m d])
+  (let [[y1 y2 m d time-h time-m] (mapv str/join(take 6(partition 2(str/split (:ev_date event) #""))))
+        _ (do(s/assert ::time-h time-h)
+             (s/assert ::time-m time-m))
+        [group year month day :as path] (mapv keyword [gr
+                                                       (s/assert ::year (str y1 y2))
+                                                       (s/assert ::month m)
+                                                          (s/assert ::day d)])
         {:keys [counter] :as record} (st-find-group group)]
     (if (nil? record)
       (mc/insert (:db @connection) "col1" (-> {:group group
@@ -42,6 +72,8 @@
                      (update :counter inc))))))
 
 (defn st-get-month [group year month]
+  (s/assert ::year year)
+  (s/assert ::month month)
   (if-let [record (st-find-group group)]
     (if-let [m (get-in record (mapv keyword [group year month]))]
       m

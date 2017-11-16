@@ -59,4 +59,8 @@
          :return String
          :query-params [group :- String, year :- String, month :- String]
          (ok (generate-string (storage/st-get-month group year month))))
+    (GET "/clear" []
+            :return String
+            (do (storage/st-clear)
+                (ok "Baza wyczyszczona")))
     ))
