@@ -40,11 +40,10 @@
 
 (defonce connection (atom {}))
 
+ (defn st-clear []
+   (mc/drop (:db @connection) "col1"))
 
-(defn st-clear []
-  (mc/drop (:db @connection) "col1"))
-
-(defn st-get-all []
+(defn st-get-all [ ]
   (mc/find-maps (:db @connection) "col1"))
 
 (defn st-find-group [group]
@@ -77,12 +76,8 @@
   (if-let [record (st-find-group group)]
     (if-let [m (get-in record (mapv keyword [group year month]))]
       m
-      {})))
-
-(disj (set [1 2 3]) 4)
-(conj [1 2])
-
-(disj #{{:a 1}{:a 2}} {:a 2})
+      {})
+    {}))
 
 (defn st-delete [gr event]
   (let [[y1 y2 m d time-h time-m] (mapv str/join(take 6(partition 2(str/split (:ev_date event) #""))))
