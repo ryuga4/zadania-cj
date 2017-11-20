@@ -27,7 +27,7 @@
               (content-type "application/json")))
    (update :body slurp))
 (storage/st-clear) 
-(storage/st-get-month "TEST" "2016" "12")
+(storage/st-get-month "TEST124" "2016" "12")
 (slurp (:body ((app) (content-type (request :post "/api/x" "{\"a\":10}") "application/json"))))
 (slurp (:body ((app) (request :get "/api/month?group=TEST&year=2017&month=11"))))
 (slurp (:body ((app) (request :get "/api/all"))))

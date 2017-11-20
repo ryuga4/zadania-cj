@@ -5,29 +5,31 @@
             [clojure.data.json :as json]
             [monger.collection :as mc]
             [clojure.string :as str]))
+(defn parse-int [s]
+  (Integer. (re-find  #"\d+" s )))
 
 (s/check-asserts true)
 
 (s/def ::month (s/and string?
                       #(= 2 (count %))
-                      #(let [a (read-string %1)]
+                      #(let [a (parse-int %1)]
                          (and (<= 1 a)
                               (>= 12 a)))))
 (s/def ::year (s/and string?
                      #(= 4 (count %))))
 (s/def ::day (s/and string?
                     #(= 2 (count %))
-                    #(let [a (read-string %1)]
+                    #(let [a (parse-int %1)]
                        (and (<= 1 a)
                             (>= 31 a)))))
 (s/def ::time-h (s/and string?
                        #(= 2 (count %))
-                       #(let [a (read-string %1)]
+                       #(let [a (parse-int %1)]
                           (and (<= 0 a)
                                (> 24 a)))))
 (s/def ::time-m (s/and string?
                        #(= 2 (count %))
-                       #(let [a (read-string %1)]
+                       #(let [a (parse-int %1)]
                           (and (<= 0 a)
                                (> 60 a)))))
 
